@@ -8,6 +8,7 @@ import br.core.correios.model.AddressStatus;
 import br.core.correios.model.Status;
 import br.core.correios.repository.AddressRepository;
 import br.core.correios.repository.AddressStatusRepository;
+import br.core.correios.repository.SetupRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,9 @@ public class CorreiosService {
 
     @Autowired
     private AddressStatusRepository addressStatusRepository;
+
+    @Autowired
+    private SetupRepository setupRepository;
 
     public Status getStatus(){
         return this.addressStatusRepository.findById(AddressStatus.DEFAULT_ID)
@@ -37,7 +41,19 @@ public class CorreiosService {
                 ;
     }
 
-    public void setup(){
+    private void saveStatus(Status status){
+        this.addressStatusRepository.save(AddressStatus.builder()
+                        .id(AddressStatus.DEFAULT_ID)
+                        .status(status)
+                .build());
+    }
 
+    public void setup(){
+        if(this.getStatus().equals(Status.NEED_SETUP)){
+        this.saveStatus(Status.RUNNING_SETUP);
+        this.addressRepository.saveAll(
+                this.setupRepository.getFromOrigin());
+        this.saveStatus(Status.READY);
+        }
     }
 }
