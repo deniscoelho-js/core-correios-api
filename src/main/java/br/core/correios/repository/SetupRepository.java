@@ -1,6 +1,7 @@
 package br.core.correios.repository;
 
 import br.core.correios.model.Address;
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -35,11 +36,19 @@ public class SetupRepository {
 
         for(String currentLine : resultStrSplited){
             String[] currentLineSplited = currentLine.split(",");
+
+            resultList.add(Address.builder()
+                            .state(currentLineSplited[0])
+                            .city(currentLineSplited[1])
+                            .district(currentLineSplited[2])
+                            .zipcode(StringUtils.leftPad(currentLineSplited[3], 8, "0"))
+                            .street(currentLineSplited.length > 3 ? currentLineSplited[4] : null)
+                            .build());
+
+
         }
 
         return resultList;
     }
-
-    //56:00 this...
 
 }

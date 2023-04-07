@@ -1,6 +1,7 @@
 package br.core.correios.service;
 
 
+import br.core.correios.CorreiosApplication;
 import br.core.correios.exception.NoContentException;
 import br.core.correios.exception.NoTReadyException;
 import br.core.correios.model.Address;
@@ -48,12 +49,27 @@ public class CorreiosService {
                 .build());
     }
 
-    public void setup(){
+    protected void setupOnStartup(){
+        try {
+            this.setup();
+        } catch (Exception exc){
+            CorreiosApplication.close(9999);
+        }
+    }
+
+    public void setup() throws Exception {
         if(this.getStatus().equals(Status.NEED_SETUP)){
         this.saveStatus(Status.RUNNING_SETUP);
-        this.addressRepository.saveAll(
-                this.setupRepository.getFromOrigin());
+
+        try {
+            this.addressRepository.saveAll(
+                    this.setupRepository.getFromOrigin());
+        } catch (Exception exc){
+            this.saveStatus(Status.NEED_SETUP);
+            throw exc;
+        }
         this.saveStatus(Status.READY);
         }
     }
+    //1:03:30
 }
