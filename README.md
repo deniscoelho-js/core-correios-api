@@ -11,8 +11,8 @@ Projeto
 Projeto em construção...
  -->
 
-## Funcionalidades
 <!--
+Funcionalidades
 -  Adicionar itens ao carrinho
 -  Validar se os itens estão no carrinho
 -  Excluir um item
