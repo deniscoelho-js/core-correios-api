@@ -10,13 +10,20 @@ import br.core.correios.model.Status;
 import br.core.correios.repository.AddressRepository;
 import br.core.correios.repository.AddressStatusRepository;
 import br.core.correios.repository.SetupRepository;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
+
+
 @Service
 public class CorreiosService {
+
+    private static Logger logger = LoggerFactory.getLogger(CorreiosService.class);
 
     @Autowired
     private AddressRepository addressRepository;
@@ -30,7 +37,6 @@ public class CorreiosService {
     public Status getStatus(){
         return this.addressStatusRepository.findById(AddressStatus.DEFAULT_ID)
                 .orElse(AddressStatus.builder().status(Status.NEED_SETUP).build()).getStatus();
-
     }
 
     public Address getAddressByZipcode(String zipcode) throws NoContentException, NoTReadyException{
@@ -54,10 +60,15 @@ public class CorreiosService {
             this.setup();
         } catch (Exception exc){
             CorreiosApplication.close(9999);
+            logger.error("setupOnStartup() - Error", exc);
         }
     }
-
     public void setup() throws Exception {
+        logger.info("-----");
+        logger.info("-----");
+        logger.info("SETUP RUNNING");
+        logger.info("-----");
+        logger.info("-----");
         if(this.getStatus().equals(Status.NEED_SETUP)){
         this.saveStatus(Status.RUNNING_SETUP);
 
@@ -70,6 +81,12 @@ public class CorreiosService {
         }
         this.saveStatus(Status.READY);
         }
+        logger.info("-----");
+        logger.info("-----");
+        logger.info("SERVICE READY");
+        logger.info("-----");
+        logger.info("-----");
+
     }
     //1:03:30
 }
